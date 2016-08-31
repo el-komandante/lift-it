@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+{% set navigation_bar = [
+  ('/', 'home', 'Home'),
+  ('/dashboard/', 'dashboard', 'Dashboard'),
+  ('/activity-tracker/', 'activity-tracker', 'Activity-Tracker'),
+  ('/about/', 'about', 'About')
+] -%}
+{% set active_page = active_page|default('home') -%}
+<html>
+<head>
+  <title>lift.it</title>
+  <script src="/static/js/jquery.js"></script>
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
+  <!-- <script src="/static/js/bootstrap.min.js"></script> -->
+  <!-- <link rel="stylesheet" href="/static/css/bootstrap.min.css"> -->
+  <!-- <link rel="stylesheet" href="/static/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous"> -->
+  <!-- <link rel='stylesheet' href='/static/css/base.css' /> -->
+  <link rel='stylesheet' href='/static/css/style.css' />
+  <link href='https://fonts.googleapis.com/css?family=Roboto:500,400italic,400,700,900' rel='stylesheet' type='text/css'>
+  <!-- <link rel='stylesheet' href='/static/css/fakeLoader.css' /> -->
+
+</head>
+<body>
+  <div class="nav-wrap">
+
+      <ul class="group" id="example-two">
+        {% for href, id, caption in navigation_bar %}
+        <li>
+          <a {% if id == active_page %} class="current_page_item_two"{% endif %} href="{{ href|e }}">{{ caption|e }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+
+  </div>
+    <div class='overlay' id='overlay'>
+      <div class='loader'></div>
+    </div>
+    {% block content %}
+
+    {% endblock %}
+  </div>
+  <div class="modal fade" id="signup-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+    <div class="signupmodal-container">
+      <h1>Sign Up</h1><br>
+      {% for message in signup_form.username.errors %}
+      <div class="flash">{{ message }}</div>
+      {% endfor %}
+
+      {% for message in signup_form.email.errors %}
+      <div class="flash">{{ message }}</div>
+      {% endfor %}
+
+      {% for message in signup_form.password.errors %}
+      <div class="flash">{{ message }}</div>
+      {% endfor %}
+      <form action='{{ url_for("home") }}' method=post>
+        {{ signup_form.hidden_tag() }}
+
+        {{ signup_form.username(placeholder="Username") }}
+
+        {{ signup_form.email(placeholder="Email") }}
+
+        {{ signup_form.password(placeholder="Password") }}
+
+        {{ signup_form.submit(class_="signup signupmodal-submit") }}
+      <!-- <input type="text" name="email" placeholder="Email">
+      <input type="text" name="user" placeholder="Username">
+      <input type="password" name="password" placeholder="Password">
+      <input type="password" name="confirmpass" placeholder="Confirm Password">
+      <input type="submit" name="signup" class="login signupmodal-submit" value="Sign Up"> -->
+      </form>
+
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+  <div class="loginmodal-container">
+    <h1>Login</h1><br>
+
+    {% for message in signin_form.email.errors %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+
+    {% for message in signin_form.password.errors %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+
+    <form action="{{ url_for('home') }}" method='post'>
+      {{ signin_form.hidden_tag() }}
+
+      {{ signin_form.email(placeholder="Email")}}
+      {{ signin_form.password(placeholder="Password")}}
+
+      {{ signin_form.submit(class_="login loginmodal-submit") }}
+
+    <!-- <input type="text" name="user" placeholder="Username">
+    <input type="password" name="pass" placeholder="Password">
+    <input type="submit" name="login" class="login loginmodal-submit" value="Login"> -->
+    </form>
+
+    <div class="login-help">
+    <a href="#">Forgot Password</a><br />
+    <a href="#">Sign up</a>
+    </div>
+  </div>
+</div>
+</div>
+<!-- <script src='/static/js/overlay.js'></script> -->
+<!-- <script src='/static/js/jquery.color-RGBa-patch.js'></script> -->
+<script src='/static/js/example.js'></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+style my workouts page
+create goal and chart models
+create chart creator
+create default charts
+create goal creator
+animated dropdown arrows on my workouts page
+devise logic for chart display options

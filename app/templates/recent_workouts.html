@@ -1,0 +1,19 @@
+{% for workout, date in recent_workouts %}
+<div class='panel-title workout'>
+  <a class='workout-date' data-toggle='collapse' href='#collapse1'>{{ date|e }}</a>
+</div>
+<div class='panel-collapse collapse workout' id='collapse1'>
+  <ul class='list-group'>
+    {% for cardio in workout.cardios %}
+    <li class='list-group-item'>
+      {{ cardio.name|e }} {{ cardio.distance }} {{ cardio.duration }}min
+    </li>
+    {% endfor %}
+    {% for lift in workout.lifts %}
+    <li class='list-group-item'>
+      {{ lift.name|e }} {{ lift.weight }}lbs {{ lift.sets }} {{ lift.reps }}
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endfor %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% set active_page = 'myworkouts' %}
+
+{% block content %}
+<link rel='stylesheet' href='/static/css/myworkouts.css' />
+<div class='myworkouts'>
+  {% for key in workouts %}
+  <div class='panel-group workout-panel'>
+    <div class='panel panel-default center'>
+      <div class='panel-heading top-level'>
+        <h4><a class='month' data-toggle='collapse' href='#{{ key }}'>{{ key }}</a></h4>
+      </div>
+      <div id='{{ key }}' class='panel-collapse collapse'>
+        <ul class='list-group'>
+          {% for i in range(workouts[key].__len__()) %}
+            <li class='list-group-item'>
+              <div class="panel-heading sub-panel">
+                <h4 class="panel-title">
+                  <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ i }}">
+                    {{ workouts[key][i].completed_time.strftime("%B %d %Y") }}
+                  </a>
+                </h4>
+              </div>
+              <div id="collapse{{ i }}" class="panel-collapse collapse">
+                <div class="panel-body activities">
+                  {% for cardio in workouts[key][i].cardios %}
+                    {{ cardio.name }} {{ cardio.distance }} {{ cardio.duration }}<br />
+                  {% endfor %}
+                  {% for lift in workouts[key][i].lifts %}
+                    {{ lift.name|e }} {{ lift.weight }}lbs {{ lift.sets }}x{{ lift.reps }}<br />
+                  {% endfor %}
+                </div>
+              </div>
+            </li>
+            {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,35 @@
+.myworkouts {
+  padding: 10%;
+}
+.month {
+  color: black;
+}
+.panel-heading.top-level{
+  background-image: none !important;
+  background-repeat: no-repeat !important;
+  background-color: #034078 !important;
+}
+.month, .month:focus, .month:hover {
+  color: white;
+}
+.panel-body {
+  border-top: none !important;
+  padding-top: 0 !important;
+}
+.panel.center {
+  border-radius: 0 !important;
+}
+.sub-panel {
+  background-color: white;
+}
+.activities {
+  padding-bottom: 7px !important;
+}
+.workout-panel {
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.top-level {
+  border-radius: 0 !important;
+}

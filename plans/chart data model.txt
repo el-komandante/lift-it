@@ -1,0 +1,14 @@
+chart data model
+
+CURRENT
+user_id = id of user who created it
+chartType = type of chart ex. line, bar, pie
+activityName = name of activity being graphed
+activityType = lift or cardio - for differentiation between objects
+display = whether or not the chart should be displayed on the dashboard
+
+PROPOSED CHANGES
+activityNames = names of activities to be graphed (array)
+
+purpose = what the chart is trying to show ex. maxes compared, lift progress over time, etc.?
+

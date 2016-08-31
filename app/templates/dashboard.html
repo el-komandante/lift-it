@@ -1,0 +1,204 @@
+  {% extends "base.html" %}
+  {% set active_page = "dashboard" %}
+
+  {% block content %}
+  <link rel='stylesheet' href='/static/css/dashboard.css' />
+  <script type='text/javascript' src='/static/js/addform.js'></script>
+  <div class='container-fluid block-content'>
+    <div class='row'>
+      <div class='col-xs-4'>
+        <!-- <div class="navbar navbar-inverse navbar-fixed-left">
+          <a class="navbar-brand" href="#">Brand</a>
+          <ul class="nav navbar-nav">
+           <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
+             <ul class="dropdown-menu" role="menu">
+              <li><a href="#">Sub Menu1</a></li>
+              <li><a href="#">Sub Menu2</a></li>
+              <li><a href="#">Sub Menu3</a></li>
+              <li class="divider"></li>
+              <li><a href="#">Sub Menu4</a></li>
+              <li><a href="#">Sub Menu5</a></li>
+             </ul>
+           </li>
+           <li><a href="#">Link2</a></li>
+           <li><a href="#">Link3</a></li>
+           <li><a href="#">Link4</a></li>
+           <li><a href="#">Link5</a></li>
+          </ul>
+        </div>       -->
+      </div>
+      <div class='col-xs-4'>
+        <div class='container-fluid pbar'>
+          <h2>Your Goal</h2>
+          <div class='progress'>
+            <div class='progress-bar' role='progressbar' aria-valuenow='70' aria-valuemin='0' aria-valuemax='100' style='width: 70%'>
+              <span class='percentage'>70%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class='col-xs-4'>
+        <div class='add-workout'>
+          <a href='#' data-toggle='modal' data-target='#workout-modal' class='btn btn-lg add'><span class='glyphicon glyphicon-plus'></span>Add Workout</a>
+          <div class="modal fade" id="workout-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+            <div class="workout-modal-dialog modal-dialog">
+            <div class="workoutmodal-container">
+              <h1>Add Workout</h1>
+              <a href='#' class='btn addfields' onclick='addLiftField()' id='addLiftField'><span class='glyphicon glyphicon-plus'></span>New Lift</a>
+              <a href='#' class='btn addfields' onclick='addRunField()' id='addRunField'><span class='glyphicon glyphicon-plus'></span>New Cardio</a>
+
+                <div id='liftField' class='liftField workout-form' style='display: none;'>
+                  <span class='form-title'>Lift</span>  <a href='#' onclick="addLiftField()"><span class='glyphicon glyphicon-plus add-glyph'></span></a>  <a href='#' class='remove' onclick="$(this).closest('.liftField').remove();"><span class='glyphicon glyphicon-minus remove-glyph' onclick="removeField()"></span></a>
+                  <div class='form-group'>
+                    <input type='hidden' name='type' class='form-control' id='lift' value='lift'/>
+                  </div>
+                  <div class='form-group'>
+                    <label for='name' class=''>Name</label>
+                    <input type='name' name='name' class='form-control' id='name' placeholder="Name" />
+                    <span class='error'>&nbsp;</span>
+                  </div>
+                  <div class='form-group'>
+                    <label for='weight' class=''>Weight</label>
+                    <input type='weight' name='weight' class='form-control' id='weight' placeholder="Weight" />
+                    <span class='error'>&nbsp;</span>
+                  </div>
+                  <div class='form-group'>
+                    <label for='sets' class=''>Sets</label>
+                    <input type='sets' name='sets' class='form-control' id='sets' placeholder="Sets" />
+                    <span class='error'>&nbsp;</span>
+                  </div>
+                  <div class='form-group'>
+                    <label for='reps' class=''>Reps</label>
+                    <input type='reps' name='reps' class='form-control' id='reps' placeholder="Reps" />
+                    <span class='error'>&nbsp;</span>
+                  </div>
+                </div>
+
+                <div id='runField' class='runField workout-form' style='display: none;'>
+                  <span class='form-title'>Run</span> <a href='#' onclick="addRunField()">  <span class='glyphicon glyphicon-plus add-glyph'></span></a> <a href='#'><span class='glyphicon glyphicon-minus remove-glyph' onclick="$(this).closest('.runField').remove();"></span></a>
+                  <div class='form-group'>
+                    <input type='hidden' name='type' class='form-control' id='cardio' value='cardio'/>
+                  </div>
+                  <div class='form-group'>
+                    <label for='name'>Name</label>
+                    <input type='name' name='name' class='form-control' id='name' placeholder="Name"/>
+                    <span class='error'>&nbsp;</span>
+                  </div>
+                  <div class='form-group'>
+                    <label for='distance'>Distance</label>
+                    <input type='distance' name='distance' class='form-control' id='distance' placeholder="Distance"/>
+                    <span class='error'>&nbsp;</span>
+                  </div>
+                  <div class='form-group'>
+                    <label for='duration'>Duration</label>
+                    <input type='duration' name='duration' class='form-control' id='duration' placeholder="Time" />
+                    <span class='error'>&nbsp;</span>
+                  </div>
+                </div>
+
+                <form id='addWorkout'>
+                  <span id='formanchor'></span>
+
+                </form>
+                <input class='btn save-workout' id='save' type='submit' name='save' class='' value='Save' />
+
+            </div>
+          </div>
+          </div>
+        </div>
+        <div class='container recent'>
+          <div class='recent-workouts'>
+            <div class='recent-title'>
+              Recent Workouts
+            </div>
+            <div class='workouts'>
+              {% for workout, date, counter in recent_workouts %}
+              <div class='panel-title workout'>
+                <a class='workout-date' data-toggle='collapse' href='#collapse{{ counter }}'>{{ date|e }}</a>
+              </div>
+              <div class='panel-collapse collapse workout' id='collapse{{ counter }}'>
+                <ul class='list-group'>
+                  {% for cardio in workout.cardios %}
+                  <li class='list-group-item'>
+                    {{ cardio.name|e }} {{ cardio.distance }} {{ cardio.duration }}min
+                  </li>
+                  {% endfor %}
+                  {% for lift in workout.lifts %}
+                  <li class='list-group-item'>
+                    {{ lift.name|e }} {{ lift.weight }}lbs {{ lift.sets }}x{{ lift.reps }}
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+      </div>
+    </div>
+    </div>
+    <div class='chart-container'>
+      {% for i in range(charts.__len__()) %}
+      <div class='chart'>
+        <canvas id='chart{{ i+1 }}'></canvas>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.min.js'></script> -->
+  <script src='/static/js/chart.min.js'></script>
+  <!-- <script src='/static/js/analytics.js'></script> -->
+  <!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/json2/20150503/json2.min.js'></script> -->
+
+  <script src='/static/js/saveWorkout.js'></script>
+  <script type='text/javascript'>
+  {% for index in range(charts.__len__()) %}
+  var xLabels{{ index }} = {{ xlabels[index]|safe }}
+  var ctx{{ index }} = document.getElementById('chart{{ index+1 }}');
+  var data{{ index }} = {
+  labels: xLabels{{ index }},
+  datasets: [
+    {
+      label: '{{ charts[index].activityName }}',
+      fill: false,
+      lineTension: 0,
+      backgroundColor: "{{ chartColors[index] }}",
+      borderColor: "{{ chartColors[index] }}",
+      borderCapStyle: 'butt',
+      borderDash: [],
+      borderDashOffset: 0.0,
+      borderJoinStyle: 'miter',
+      pointBorderColor: "{{ chartColors[index] }}",
+      pointBackgroundColor: "#fff",
+      pointBorderWidth: 5,
+      pointHoverRadius: 5,
+      pointHoverBackgroundColor: "{{ chartColors[index] }}",
+      pointHoverBorderColor: "{{ chartColors[index] }}",
+      pointHoverBorderWidth: 2,
+      pointRadius: 1,
+      pointHitRadius: 10,
+      data: {{ data_values[index] }}
+    }]
+  };
+  var chart{{ index }} = new Chart(ctx{{ index }}, {
+    type: '{{ charts[index].chartType }}',
+    data: data{{ index }},
+    options: {
+      title: {
+        display: true,
+        text: '{{ charts[index].activityName }}',
+        fontSize: 24,
+        fontColor: 'black',
+        fontFamily: 'Roboto'
+      },
+      scales: {
+          yAxes: [{
+              ticks: {
+                  beginAtZero:true
+              }
+          }]
+      }
+    },
+  });
+  {% endfor %}
+  </script>
+  {% endblock %}

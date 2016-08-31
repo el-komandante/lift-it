@@ -1,0 +1,9 @@
+.blue {
+  background-color: #007FFF;
+  color: white;
+  border-radius: 0 !important;
+}
+.container{
+  display: inline-block;
+  padding-left: 4%;
+}
