@@ -9,14 +9,31 @@
 }
 .progress-bar {
   background-image: none;
-  background-color: #007FFF;
+  /*background-color: #007FFF;*/
+  background-color: #034078;
 }
 .percentage {
   margin: 0 auto;
 }
 .progress {
   height: 20px;
+  border-radius: 0;
 }
+/*.current-progress-text, .current-progress-tooltip {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  position: absolute;
+  z-index: 1;
+}
+.current-progress-text:hover, .current-progress-tooltip:hover {
+  visibility: visible;
+}*/
 .chart {
   width: 100%;
   padding-top: 1%;
@@ -54,7 +71,6 @@
 }
 .addfields:hover {
   background-color: #034078 !important;
-
 }
 .add-workout a:hover, .add-workout a:active, .add-workout a::after, .add-workout a:focus {
   color: white;
@@ -298,6 +314,135 @@ display: block;
 .formerror {
   border-color: red !important;
 }
+.customize {
+  background-color: #007FFF;
+  color: white;
+  position: fixed;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+  transition: all ease 0.3s;
+  border-radius: 0 !important;
+  left: 2%;
+}
+.customize:hover {
+  color: white;
+  background-color: #034078;
+}
+.customize:focus {
+  color: white;
+}
+.customize-container {
+    padding-bottom: 3%;
+    padding-top: 3%;
+}
+.tt-menu {
+  background-color: white;
+  width: 100%;
+  -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+  -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+  box-shadow: 0 5px 10px rgba(0,0,0,.2);
+  margin-top: 3px;
+}
+.twitter-typeahead {
+  display: block !important;
+}
+.tt-suggestion {
+  padding: 4px 12px;
+}
+.tt-suggestion.tt-cursor,.tt-suggestion:hover {
+  color: #fff;
+  background-color: #0097cf;
+}
+input::-webkit-datetime-edit-ampm-field {
+  display: none;
+}
+
+/*chart modal*/
+.chart-modal-container {
+  padding: 30px;
+  width: 50% !important;
+  background-color: #F7F7F7;
+  margin: 0 auto;
+  /*border-radius: 5px;*/
+  border-radius: 0;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  font-family: roboto;
+  height: auto;
+}
+.chart-form {
+  width: 70%;
+}
+.chart-form.tab-pane {
+  background-color: transparent;
+}
+.chart-form label {
+  display: block;
+  padding-top: 2%;
+  color: black;
+}
+.chart-form select {
+  border-radius: 0 !important;
+}
+.multiselect {
+  border-radius: 0 !important;
+}
+li.ntab.active {
+  background-color: transparent !important;
+}
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+  background-color: transparent;
+}
+.chart-modal-dialog {
+  width: 65%;
+  overflow-y: hidden;
+}
+.save-chart {
+  bottom: 0;
+  background-color: #007FFF;
+  color: white;
+  transition: all ease 0.3s;
+  border-radius: 0 !important;
+  margin-top: 3%;
+  width: 100%;
+}
+.save-chart:hover {
+  color: white;
+  background-color: #034078 !important;
+}
+.save-chart:focus {
+  color: white;
+}
+.selected-lift, .selected-lift:hover {
+  background-color: #007FFF;
+  color: white;
+}
+.selected-lift label, .selected-lift label:hover {
+  color: white;
+}
+.selected-lift a, .selected-lift a:hover, .selected-lift a:focus {
+  background-color: #007FFF !important;
+  color: white !important;
+}
+.workoutmodal {
+  text-align: center;
+  font-size: 14px;
+  font-family: 'Arial', sans-serif;
+  font-weight: 700;
+  height: 36px;
+  padding: 0 8px;
+}
+.workoutmodal-submit {
+  border: 0;
+  color: #fff;
+  text-shadow: 0 1px rgba(0,0,0,0.1);
+  background-color: #007FFF;
+  padding: 17px 0;
+  font-family: roboto;
+  font-size: 14px;
+}
+
+
+
 /*@keyframes new-form-animation {
 
   from {

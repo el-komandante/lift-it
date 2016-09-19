@@ -1,0 +1,9 @@
+cardio chart types:
+
+distance, duration
+
+cardio goal types:
+
+increase distance regardless of speed
+
+decrease amount of time to run 

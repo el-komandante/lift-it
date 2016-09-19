@@ -1,0 +1,51 @@
+{% for index in range(charts.__len__()) %}
+var xLabels{{ index }} = {{ xlabels[index]|safe }}
+var ctx{{ index }} = document.getElementById('chart{{ index+1 }}');
+var data{{ index }} = {
+labels: xLabels{{ index }},
+datasets: [
+  {
+    label: '{{ charts[index].activityName }}',
+    fill: false,
+    lineTension: 0,
+    backgroundColor: "{{ chartColors[index] }}",
+    borderColor: "{{ chartColors[index] }}",
+    borderCapStyle: 'butt',
+    borderDash: [],
+    borderDashOffset: 0.0,
+    borderJoinStyle: 'miter',
+    pointBorderColor: "{{ chartColors[index] }}",
+    pointBackgroundColor: "#fff",
+    pointBorderWidth: 5,
+    pointHoverRadius: 5,
+    pointHoverBackgroundColor: "{{ chartColors[index] }}",
+    pointHoverBorderColor: "{{ chartColors[index] }}",
+    pointHoverBorderWidth: 2,
+    pointRadius: 1,
+    pointHitRadius: 10,
+    data: {{ data_values[index] }}
+  }]
+};
+var chart{{ index }} = new Chart(ctx{{ index }}, {
+  type: '{{ charts[index].chartType }}',
+  data: data{{ index }},
+  options: {
+    title: {
+      display: true,
+      text: '{{ charts[index].activityName }}',
+      fontSize: 24,
+      fontColor: 'black',
+      fontFamily: 'Roboto'
+    },
+    scales: {
+        yAxes: [{
+            ticks: {
+                beginAtZero:true
+            }
+        }]
+    }
+  },
+});
+{% endfor %}
+
+, data_values=data_values, xlabels=xlabels, chartColors=colors

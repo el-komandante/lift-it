@@ -4,30 +4,33 @@
 {% block content %}
 <link rel='stylesheet' href='/static/css/myworkouts.css' />
 <div class='myworkouts'>
-  {% for key in workouts %}
+  {% for month in workouts %}
   <div class='panel-group workout-panel'>
     <div class='panel panel-default center'>
       <div class='panel-heading top-level'>
-        <h4><a class='month' data-toggle='collapse' href='#{{ key }}'>{{ key }}</a></h4>
+        <h4><a class='month' data-toggle='collapse' href='#{{ month }}'>{{ month }}</a></h4>
       </div>
-      <div id='{{ key }}' class='panel-collapse collapse'>
+      <div id='{{ month }}' class='panel-collapse collapse'>
         <ul class='list-group'>
-          {% for i in range(workouts[key].__len__()) %}
+          {% for i in range(workouts[month].__len__()) %}
             <li class='list-group-item'>
               <div class="panel-heading sub-panel">
                 <h4 class="panel-title">
-                  <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ i }}">
-                    {{ workouts[key][i].completed_time.strftime("%B %d %Y") }}
+                  <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ month }}{{ i }}">
+                    {{ workouts[month][i].completed_time.strftime("%B %d %Y") }}
                   </a>
+                  <span class='edit-button'>&nbsp;&nbsp;&nbsp;<a href='#'><small>Edit</small></a></span>
                 </h4>
               </div>
-              <div id="collapse{{ i }}" class="panel-collapse collapse">
+              <div id="collapse{{ month }}{{ i }}" class="panel-collapse collapse">
                 <div class="panel-body activities">
-                  {% for cardio in workouts[key][i].cardios %}
-                    {{ cardio.name }} {{ cardio.distance }} {{ cardio.duration }}<br />
+                  {% for cardio in workouts[month][i].cardios %}
+                    <input type='hidden' value='{{ cardio.id }}' />
+                    <span class='name'>{{ cardio.name }}</span> <span class='distance'>{{ cardio.distance }}</span> <span class='duration'>{{ cardio.duration }}</span><br />
                   {% endfor %}
-                  {% for lift in workouts[key][i].lifts %}
-                    {{ lift.name|e }} {{ lift.weight }}lbs {{ lift.sets }}x{{ lift.reps }}<br />
+                  {% for lift in workouts[month][i].lifts %}
+                    <input type='hidden' value='{{ lift.id }}' />
+                    <span class='name'>{{ lift.name|e }}</span> <span class='weight'>{{ lift.weight }}lbs</span> <span class='sets'>{{ lift.sets }}</span>x<span class='reps'>{{ lift.reps }}</span><br />
                   {% endfor %}
                 </div>
               </div>
@@ -37,6 +40,6 @@
       </div>
     </div>
   </div>
+  {% endfor %}
 </div>
-{% endfor %}
 {% endblock %}

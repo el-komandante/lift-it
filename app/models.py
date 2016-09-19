@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import pytz
 from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy_utils import ChoiceType
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -12,7 +13,8 @@ class User(db.Model):
     email = db.Column(db.String(120), index=True, unique=True, nullable=False)
     pw_hash = db.Column(db.String(255), nullable=False)
     authenticated = db.Column(db.Boolean, default=False)
-    date_registered = datetime.now(pytz.utc)
+    date_registered = db.Column(db.DateTime, default=datetime.now(pytz.utc), nullable=False)
+
 
     def __init__(self, username, email, password):
         self.username = username
@@ -36,6 +38,20 @@ class User(db.Model):
 
     def is_anonymous(self):
         return False
+    def get_recent_workouts(self):
+        return Workout.query.filter_by(user_id=self.id).order_by(Workout.completed_time.desc()).limit(5).all()
+
+    def get_goals(self):
+        return Goal.query.filter_by(user_id=self.id).filter_by(show=True).all()
+
+    def get_charts(self):
+        return Chart.query.filter_by(user_id=self.id).all()
+
+    def get_lift_names(self):
+        return db.session.query(Lift.name.distinct()).filter_by(user_id=self.id).all()
+
+    def get_cardio_names(self):
+        return db.session.query(Cardio.name.distinct()).filter_by(user_id=self.id).all()
 
     def __repr__(self):
         return '<User (username="%r">, email="%r", id="%r")>' % (self.username, self.email, self.id)
@@ -44,18 +60,22 @@ class Cardio(db.Model):
     __tablename__ = 'cardios'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(70), nullable=False)
-    duration = db.Column(db.Integer)
+    duration = db.Column(db.Interval)
     distance = db.Column(db.Integer)
     workout_id = db.Column(db.Integer, db.ForeignKey('workouts.id'))
-    created_time = db.Column(db.DateTime)
+    created_time = db.Column(db.DateTime, default=datetime.now(pytz.utc), nullable=False)
     workout = db.relationship('Workout', backref='cardios')
+    user_id = db.Column(db.Integer)
 
     def __init__(self, workout, name, duration, distance):
         self.workout = workout
         self.name = name
         self.duration = duration
         self.distance = distance
-        self.created_time = datetime.now(pytz.utc)
+        self.user_id = workout.user.id
+
+    def get_duration_as_int(self):
+        return self.duration.total_seconds()
 
     def __repr__(self):
         return '<Cardio (name="%r", id="%r")>' % (self.name, self.id)
@@ -72,6 +92,8 @@ class Lift(db.Model):
     workout = db.relationship('Workout', backref='lifts')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     completed_time = db.Column(db.DateTime)
+    created_time = db.Column(db.DateTime, default=datetime.now(pytz.utc), nullable=False)
+
 
     def __init__(self, workout, name, weight, sets, reps):
         self.workout = workout
@@ -93,6 +115,8 @@ class Workout(db.Model):
     completed_time = db.Column(db.DateTime, default=datetime.now(pytz.utc), nullable=False)
     user_id = db.Column(db.ForeignKey('users.id'))
     user = db.relationship('User', backref='workouts')
+    created_time = db.Column(db.DateTime, default=datetime.now(pytz.utc), nullable=False)
+
 
     def __init__(self, user, completed_time):
         self.user = user
@@ -104,13 +128,30 @@ class Workout(db.Model):
     def __repr__(self):
         return '<Workout (completed_time="%r", id="%r")>' % (self.completed_time, self.id)
 
-# class Goal(db.model):
-#     __tablename__ = 'goals'
-#     id = db.Column(db.Integer, primary_key=True)
-#     user_id = db.Column(db.ForeignKey('users.id'))
-#     user = db.relationship('User', backref='goals')
-#
-#     def __init__(self, user):
+class Goal(db.Model):
+    __tablename__ = 'goals'
+    TYPES = [
+        ('lift', 'Lift'),
+        ('cardio', 'Cardio')
+    ]
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.ForeignKey('users.id'))
+    user = db.relationship('User', backref='goals')
+    type = db.Column(ChoiceType(TYPES))
+    name = db.Column(db.String(70))
+    weight = db.Column(db.Integer)
+    duration = db.Column(db.Interval)
+    created_time = db.Column(db.DateTime, default=datetime.now(pytz.utc), nullable=False)
+    show = db.Column(db.Boolean, default=True)
+
+    def __init__(self, user, name, type):
+        self.user = user
+        self.type = type
+        self.user_id = user.id
+        self.display = True
+
+    def __repr__(self):
+        return '<Goal (type="%r", name="%r" id="%r")>' % (self.type, self.name, self.id)
 
 
 class Chart(db.Model):
@@ -118,19 +159,19 @@ class Chart(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.ForeignKey('users.id'))
     chartType = db.Column(db.String(40))
-    activityName = db.Column(db.String(50))
     activityType = db.Column(db.String(10))
-    display = db.Column(db.Boolean())
+    display = db.Column(db.Boolean(), default=True)
     user = db.relationship('User', backref='charts')
     activityNames = db.Column(ARRAY(db.String(70)))
+    created_time = db.Column(db.DateTime, default=datetime.now(pytz.utc), nullable=False)
 
-    def __init__(self, chartType, user, activityName, activityType):
+    def __init__(self, chartType, user, activityNames, activityType):
         self.chartType = chartType
         self.user = user
         self.user_id = user.id
-        self.activityName = activityName
-        self.activityType = activityType
         self.display = True
+        self.activityNames = activityNames
+        self.activityType = activityType
 
     def __repr__(self):
-        return '<Chart (chartType="%r", id="%r", activityName="%r")>' % (self.chartType, self.id, self.activityName)
+        return '<Chart (chartType="%r", id="%r", activityNames="%r")>' % (self.chartType, self.id, self.activityNames)

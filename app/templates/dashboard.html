@@ -3,39 +3,30 @@
 
   {% block content %}
   <link rel='stylesheet' href='/static/css/dashboard.css' />
+  <link rel='stylesheet' href='/static/css/bootstrap-tagsinput.css' />
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css' />
   <script type='text/javascript' src='/static/js/addform.js'></script>
   <div class='container-fluid block-content'>
     <div class='row'>
       <div class='col-xs-4'>
-        <!-- <div class="navbar navbar-inverse navbar-fixed-left">
-          <a class="navbar-brand" href="#">Brand</a>
-          <ul class="nav navbar-nav">
-           <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
-             <ul class="dropdown-menu" role="menu">
-              <li><a href="#">Sub Menu1</a></li>
-              <li><a href="#">Sub Menu2</a></li>
-              <li><a href="#">Sub Menu3</a></li>
-              <li class="divider"></li>
-              <li><a href="#">Sub Menu4</a></li>
-              <li><a href="#">Sub Menu5</a></li>
-             </ul>
-           </li>
-           <li><a href="#">Link2</a></li>
-           <li><a href="#">Link3</a></li>
-           <li><a href="#">Link4</a></li>
-           <li><a href="#">Link5</a></li>
-          </ul>
-        </div>       -->
+        <div class='customize-container'>
+          <a href='#' data-toggle='modal' data-target='#chart-modal' class='btn btn-lg customize'>Customize Dashboard</a>
+        </div>
       </div>
       <div class='col-xs-4'>
+        {% for goal in goals %}
         <div class='container-fluid pbar'>
-          <h2>Your Goal</h2>
+          {% if goal[0].type.code == 'lift' %}
+          <h2>{{ goal[0].name }} {{ goal[0].weight }} lbs</h2>
           <div class='progress'>
-            <div class='progress-bar' role='progressbar' aria-valuenow='70' aria-valuemin='0' aria-valuemax='100' style='width: 70%'>
-              <span class='percentage'>70%</span>
+            <div class='progress-bar current-progress-tooltip' role='progressbar' aria-valuenow='{{ goal.weight }}' aria-valuemin='0' aria-valuemax='100' style='width: {{ goal[1] }}%'>
+              <span class='percentage'>{{ goal[1] }}%</span>
+              <span class='current-progress-text'>{{ goal[2] }}lbs</span>
             </div>
           </div>
+          {% endif %}
         </div>
+        {% endfor %}
       </div>
       <div class='col-xs-4'>
         <div class='add-workout'>
@@ -54,7 +45,7 @@
                   </div>
                   <div class='form-group'>
                     <label for='name' class=''>Name</label>
-                    <input type='name' name='name' class='form-control' id='name' placeholder="Name" />
+                    <input type='name' name='name' class='form-control lift-typeahead' id='name' placeholder="Name" />
                     <span class='error'>&nbsp;</span>
                   </div>
                   <div class='form-group'>
@@ -81,7 +72,7 @@
                   </div>
                   <div class='form-group'>
                     <label for='name'>Name</label>
-                    <input type='name' name='name' class='form-control' id='name' placeholder="Name"/>
+                    <input type='name' name='name' class='form-control cardio-typeahead' id='name' placeholder="Name"/>
                     <span class='error'>&nbsp;</span>
                   </div>
                   <div class='form-group'>
@@ -91,7 +82,7 @@
                   </div>
                   <div class='form-group'>
                     <label for='duration'>Duration</label>
-                    <input type='duration' name='duration' class='form-control' id='duration' placeholder="Time" />
+                    <input type='time' step='1' name='duration' class='form-control' id='duration' placeholder="Duration" />
                     <span class='error'>&nbsp;</span>
                   </div>
                 </div>
@@ -100,10 +91,65 @@
                   <span id='formanchor'></span>
 
                 </form>
-                <input class='btn save-workout' id='save' type='submit' name='save' class='' value='Save' />
+                <input class='btn save-workout' data-loading-text='Saving...' id='save' type='submit' name='save' class='' value='Save' />
 
             </div>
           </div>
+          </div>
+        </div>
+        <div class='modal fade' role='dialog' id='chart-modal' tabindex='-1' aria-hidden='true' style='display:none;'>
+          <div class='chart-modal-dialog modal-dialog'>
+            <div class='chart-modal-container'>
+              <ul class="nav nav-tabs">
+                <li class='ntab active'><a data-toggle="tab" href="#chart-form">Charts</a></li>
+                <li class='ntab'><a data-toggle="tab" href="#goal-form">Goals</a></li>
+              </ul>
+              <div class='tab-content'>
+                <div id='chart-form' class='chart-form tab-pane fade in active'>
+                  <div class='form-group'>
+                    <label for='name'>Exercise Names</label>
+                    <select id='chart-lift-names' multiple='multiple'>
+                      {% for lift in lift_names %}
+                      <option>{{ lift[0] }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class='form-group'>
+                    <label for='chartType'>Chart Type</label>
+                    <select class='form-control' id='chart-type' name='chartType'>
+                      <option>Line</option>
+                      <option>Max</option>
+                    </select>
+                  </div>
+                  <div class='form-group'>
+                    <label for='activityType'>Exercise Type</label>
+                    <select class='form-control' name='activityType' id='activity-type'>
+                      <option>Lift</option>
+                      <option>Cardio</option>
+                    </select>
+                  </div>
+                  <input class='btn save-chart' data-loading-text='Saving...' id='save-chart' type='submit' name='save-chart' class='' value='Save' />
+                </div>
+                <div class='goal-form tab pane fade' id='goal-form'>
+                  <div class='form-group'>
+                    <label for='name'>Exercise Names</label>
+                    <select id='goal-lift-names' multiple='multiple'>
+                      {% for lift in lift_names %}
+                      <option>{{ lift[0] }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class='form-group'>
+                    <label for='activityType'>Goal Type</label>
+                    <select class='form-control' name='activityType' id='activity-type'>
+                      <option>Lift</option>
+                      <option>Cardio</option>
+                    </select>
+                  </div>
+                  <input class='btn save-goal' data-loading-text='Saving...' id='save-goal' type='submit' name='save-chart' class='' value='Save' />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class='container recent'>
@@ -145,60 +191,19 @@
     </div>
   </div>
   <!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.min.js'></script> -->
-  <script src='/static/js/chart.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.bundle.js'></script>
+  <script src='/static/js/typeahead.jquery.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js'></script>
   <!-- <script src='/static/js/analytics.js'></script> -->
   <!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/json2/20150503/json2.min.js'></script> -->
-
+  <script src='/static/js/saveChart.js'></script>
   <script src='/static/js/saveWorkout.js'></script>
+  <script src='/static/js/liftTypeahead.js'></script>
   <script type='text/javascript'>
   {% for index in range(charts.__len__()) %}
-  var xLabels{{ index }} = {{ xlabels[index]|safe }}
   var ctx{{ index }} = document.getElementById('chart{{ index+1 }}');
-  var data{{ index }} = {
-  labels: xLabels{{ index }},
-  datasets: [
-    {
-      label: '{{ charts[index].activityName }}',
-      fill: false,
-      lineTension: 0,
-      backgroundColor: "{{ chartColors[index] }}",
-      borderColor: "{{ chartColors[index] }}",
-      borderCapStyle: 'butt',
-      borderDash: [],
-      borderDashOffset: 0.0,
-      borderJoinStyle: 'miter',
-      pointBorderColor: "{{ chartColors[index] }}",
-      pointBackgroundColor: "#fff",
-      pointBorderWidth: 5,
-      pointHoverRadius: 5,
-      pointHoverBackgroundColor: "{{ chartColors[index] }}",
-      pointHoverBorderColor: "{{ chartColors[index] }}",
-      pointHoverBorderWidth: 2,
-      pointRadius: 1,
-      pointHitRadius: 10,
-      data: {{ data_values[index] }}
-    }]
-  };
-  var chart{{ index }} = new Chart(ctx{{ index }}, {
-    type: '{{ charts[index].chartType }}',
-    data: data{{ index }},
-    options: {
-      title: {
-        display: true,
-        text: '{{ charts[index].activityName }}',
-        fontSize: 24,
-        fontColor: 'black',
-        fontFamily: 'Roboto'
-      },
-      scales: {
-          yAxes: [{
-              ticks: {
-                  beginAtZero:true
-              }
-          }]
-      }
-    },
-  });
+  var chart{{ index }} = new Chart(ctx{{ index }}, {{ charts[index]|safe }});
   {% endfor %}
+
   </script>
   {% endblock %}

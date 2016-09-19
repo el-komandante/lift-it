@@ -29,6 +29,15 @@ function addLiftField() {
     $($(newLiftFields).children()[g]).children().addClass('live');
   }
   newLiftFields.id = 'liftField-workout-form-live' + liftCounter;
+  $($(newLiftFields).children('.form-group')[1]).children('input').typeahead({
+    hint: false,
+    highlight: true,
+    minLength: 1
+  },
+  {
+    name: 'lifts',
+    source: substringMatcher(lifts)
+  });
   $(newLiftFields).addClass('animated fadeIn');
   var insertHere = document.getElementById('formanchor');
   insertHere.parentNode.insertBefore(newLiftFields, insertHere);
@@ -54,6 +63,16 @@ function addRunField() {
   for (var g = 0; g < $(newRunFields).children().length; g++) {
     $($(newRunFields).children()[g]).children().addClass('live');
   }
+  $($(newRunFields).children('.form-group')[1]).children('input').typeahead({
+    hint: false,
+    highlight: true,
+    minLength: 1
+  },
+  {
+    name: 'cardios',
+    source: substringMatcher(cardios)
+  });
+
   $(newRunFields).addClass('animated fadeIn');
   var insertHere = document.getElementById('formanchor');
   insertHere.parentNode.insertBefore(newRunFields, insertHere);

@@ -6,6 +6,9 @@ from sqlalchemy import func
 from collections import OrderedDict
 import json
 from random import shuffle
+from orderedset import OrderedSet
+from create_chart import create_chart
+
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -66,32 +69,37 @@ def dashboard():
     user = User.query.filter_by(email = session['email']).first()
 
     # Create list of 5 most recent workouts, date headings, and dropdown href id's
-    recent_workouts = Workout.query.filter_by(user_id = user.id).order_by(Workout.completed_time.desc()).limit(5).all()
+    recent_workouts = user.get_recent_workouts()
     dates = [workout.completed_time.strftime('%m/%d/%Y') for workout in recent_workouts]
     counters = [1, 2, 3, 4, 5]
     recent_workouts = zip(recent_workouts, dates, counters)
+    goals = user.get_goals()
+    goal_progress = []
+    current_progress = []
+    for goal in goals:
+        if goal.type.code == 'lift':
+            weight = max([lift.weight for lift in Lift.query.filter_by(user_id=user.id, name=goal.name).all()])
+            progress = int((weight/goal.weight)*100)
+            goal_progress.append(progress)
+            current_progress.append(weight)
+        elif goal.type.code == 'cardio':
+            goal_progress.append(Cardio.query.filter_by(user_id=user.id, name=goal.name).order_by(Cardio.completed_time).first().duration)
 
-    colors = ['#0047ab', '#fb3640', '#605f5e', '#1d3461', '#247ba0']
-    shuffle(colors)
+    goals = zip(goals, goal_progress, current_progress)
 
-    #List first three charts + instantiate data variables
-    charts = Chart.query.filter_by(user_id = user.id).limit(3).all()
-    data_values = []
-    xlabels = []
-    chartlabels = []
+    #List first three charts
+    charts = user.get_charts()
+    chart_json = []
 
+    lift_names = user.get_lift_names()
+    cardio_names = user.get_cardio_names()
     # Generate chart labels and query associated activities by name and user id
     for chart in charts:
-        chartlabels.append(chart.activityName)
-        if chart.activityType == 'lift':
-            lifts = Lift.query.filter_by(name=str(chart.activityName), user_id=user.id).order_by(Lift.completed_time).all()
-            data_values.append([lift.weight for lift in lifts])
-            xlabels.append([lift.workout.completed_time.strftime('%Y-%m-%d') for lift in lifts])
-
+        chart_json.append(create_chart(chart))
     if user is None:
         return redirect(url_for('home'))
     else:
-        return render_template('dashboard.html', signup_form=SignupForm(), signin_form=SigninForm(), recent_workouts=recent_workouts, charts=charts, data_values=data_values, xlabels=xlabels, chartColors=colors)
+        return render_template('dashboard.html', signup_form=SignupForm(), signin_form=SigninForm(), recent_workouts=recent_workouts, charts=chart_json, goals=goals, lift_names=lift_names)
 
 
 @app.route('/about/')
@@ -104,6 +112,7 @@ def saveworkout():
     workout = Workout(user, None)
     db.session.add(workout)
     activities = json.loads(request.data)
+    print activities
 
     for activity in activities:
         newActivity = activities[activity]
@@ -116,7 +125,7 @@ def saveworkout():
 
 
     db.session.commit()
-    return json.dumps({'status':'OK'})
+    return json.dumps({'status':'OK', 'status_code': 201})
 
 @app.route('/myworkouts/', methods=['GET'])
 def myworkouts():
@@ -138,4 +147,36 @@ def myworkouts():
         for month in dates:
             if workout.completed_time.month == month[0].month:
                 workouts_sorted[month[0].strftime('%B')].append(workout)
+    for month in workouts_sorted:
+        for workout in workouts_sorted[month]:
+            print workout.cardios, workout.lifts, workout.user_id
     return render_template('myworkouts.html', workouts=workouts_sorted, signin_form=SigninForm(), signup_form=SignupForm())
+
+@app.route('/charts/', methods=['GET', 'POST'])
+def charts():
+    if 'email' not in session:
+        return None
+    elif request.method == 'POST':
+        chart_data = json.loads(request.data)
+        user = User.query.filter_by(email = session['email']).first()
+        chart = Chart(chart_data['chartType'].lower(), user, chart_data['activityNames'], chart_data['activityType'].lower())
+        db.session.add(chart)
+        db.session.commit()
+        return json.dumps({'status': 'OK', 'status_code': 201})
+
+@app.route('/goals/', methods=['GET', 'POST'])
+def goals():
+    if 'email' not in session:
+        return None
+    elif request.method == 'POST':
+        goal_data = json.loads(request.data)
+        user = User.query.filter_by(email = session['email']).first()
+        goal = Goal(chart_data['chartType'].lower(), user, chart_data['activityNames'], chart_data['activityType'].lower())
+        if goal.type == 'lift':
+            goal.weight = goal_data.weight
+        elif goal.type == 'cardio':
+            goal.duration = goal_data.duration
+
+        db.session.add(goal)
+        db.session.commit()
+        return json.dumps({'status': 'OK', 'status_code': 201})

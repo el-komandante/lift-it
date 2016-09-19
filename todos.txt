@@ -5,3 +5,6 @@ create default charts
 create goal creator
 animated dropdown arrows on my workouts page
 devise logic for chart display options
+implement goal into template
+add recent workouts to my workouts page
+add duration and completed time inputs
