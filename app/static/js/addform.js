@@ -1,5 +1,12 @@
 var liftCounter = 0;
 var runCounter = 0;
+$.fn.timingfield.defaults = {
+  maxHour:        99,
+  width:          263,
+  hoursText:      'HH',
+  minutesText:    'MM',
+  secondsText:    'SS'
+};
 function addLiftField() {
   // liftCounter++;
   // var newLiftField = $('#liftField').clone();
@@ -72,6 +79,7 @@ function addRunField() {
     name: 'cardios',
     source: substringMatcher(cardios)
   });
+  $($(newRunFields).children('.form-group')[3]).children('input').timingfield();
 
   $(newRunFields).addClass('animated fadeIn');
   var insertHere = document.getElementById('formanchor');

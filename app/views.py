@@ -8,6 +8,7 @@ import json
 from random import shuffle
 from orderedset import OrderedSet
 from create_chart import create_chart
+import datetime
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -120,9 +121,8 @@ def saveworkout():
             new = Lift(workout, newActivity['name'], int(newActivity['weight']), int(newActivity['sets']), int(newActivity['reps']))
             db.session.add(new)
         elif newActivity['type'] == 'cardio':
-            new = Cardio(workout, newActivity['name'], newActivity['duration'], float(newActivity['distance']))
+            new = Cardio(workout, newActivity['name'], datetime.timedelta(hours=int(newActivity['duration']['hours']), minutes=int(newActivity['duration']['minutes']), seconds=int(newActivity['duration']['seconds'])), float(newActivity['distance']))
             db.session.add(new)
-
 
     db.session.commit()
     return json.dumps({'status':'OK', 'status_code': 201})

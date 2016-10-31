@@ -5,7 +5,8 @@
   <link rel='stylesheet' href='/static/css/dashboard.css' />
   <link rel='stylesheet' href='/static/css/bootstrap-tagsinput.css' />
   <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css' />
-  <script type='text/javascript' src='/static/js/addform.js'></script>
+  <link rel='stylesheet' href='/static/css/timingfield.css' />
+  <script src='/static/js/addform.js'></script>
   <div class='container-fluid block-content'>
     <div class='row'>
       <div class='col-xs-4'>
@@ -37,7 +38,7 @@
               <h1>Add Workout</h1>
               <a href='#' class='btn addfields' onclick='addLiftField()' id='addLiftField'><span class='glyphicon glyphicon-plus'></span>New Lift</a>
               <a href='#' class='btn addfields' onclick='addRunField()' id='addRunField'><span class='glyphicon glyphicon-plus'></span>New Cardio</a>
-
+                <!-- Form Prototypes -->
                 <div id='liftField' class='liftField workout-form' style='display: none;'>
                   <span class='form-title'>Lift</span>  <a href='#' onclick="addLiftField()"><span class='glyphicon glyphicon-plus add-glyph'></span></a>  <a href='#' class='remove' onclick="$(this).closest('.liftField').remove();"><span class='glyphicon glyphicon-minus remove-glyph' onclick="removeField()"></span></a>
                   <div class='form-group'>
@@ -66,7 +67,7 @@
                 </div>
 
                 <div id='runField' class='runField workout-form' style='display: none;'>
-                  <span class='form-title'>Run</span> <a href='#' onclick="addRunField()">  <span class='glyphicon glyphicon-plus add-glyph'></span></a> <a href='#'><span class='glyphicon glyphicon-minus remove-glyph' onclick="$(this).closest('.runField').remove();"></span></a>
+                  <span class='form-title'>Cardio</span> <a href='#' onclick="addRunField()">  <span class='glyphicon glyphicon-plus add-glyph'></span></a> <a href='#'><span class='glyphicon glyphicon-minus remove-glyph' onclick="$(this).closest('.runField').remove();"></span></a>
                   <div class='form-group'>
                     <input type='hidden' name='type' class='form-control' id='cardio' value='cardio'/>
                   </div>
@@ -82,11 +83,11 @@
                   </div>
                   <div class='form-group'>
                     <label for='duration'>Duration</label>
-                    <input type='time' step='1' name='duration' class='form-control' id='duration' placeholder="Duration" />
+                    <input type='text' name='duration' class='form-control' id='duration' placeholder="Duration" />
                     <span class='error'>&nbsp;</span>
                   </div>
                 </div>
-
+                <!-- End Forms -->
                 <form id='addWorkout'>
                   <span id='formanchor'></span>
 
@@ -130,7 +131,7 @@
                   </div>
                   <input class='btn save-chart' data-loading-text='Saving...' id='save-chart' type='submit' name='save-chart' class='' value='Save' />
                 </div>
-                <div class='goal-form tab pane fade' id='goal-form'>
+                <div class='goal-form tab-pane fade' id='goal-form'>
                   <div class='form-group'>
                     <label for='name'>Exercise Names</label>
                     <select id='goal-lift-names' multiple='multiple'>
@@ -197,8 +198,10 @@
   <!-- <script src='/static/js/analytics.js'></script> -->
   <!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/json2/20150503/json2.min.js'></script> -->
   <script src='/static/js/saveChart.js'></script>
+  <script src='/static/js/saveGoal.js'></script>
   <script src='/static/js/saveWorkout.js'></script>
   <script src='/static/js/liftTypeahead.js'></script>
+  <script src='/static/js/timingfield.js'></script>
   <script type='text/javascript'>
   {% for index in range(charts.__len__()) %}
   var ctx{{ index }} = document.getElementById('chart{{ index+1 }}');
